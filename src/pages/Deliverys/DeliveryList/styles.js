@@ -9,43 +9,13 @@ export const Container = styled.View`
   margin-bottom: 10px;
 `;
 
-export const ContentStatus = styled.View`
+export const ContentProgress = styled.View`
   padding: 10px;
   height: 95px;
 `;
 
 export const ContentTitle = styled.View`
-  margin-bottom: 20px;
   flex-direction: row;
-`;
-
-export const ContentDeliveryStatus = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-export const ContentDeliveryCollun = styled.View`
-  width: 33.33%;
-  align-items: center;
-`;
-
-export const LineDeliveryOne = styled.Text`
-  position: absolute;
-  left: 18%;
-  top: 5px;
-  border-top-width: 1px;
-  border-top-color: #7d40e7;
-  width: 30.5%;
-`;
-
-export const LineDeliveryTwo = styled.Text`
-  position: absolute;
-  left: 51.5%;
-  top: 5px;
-  border-top-width: 1px;
-  border-top-color: #7d40e7;
-  width: 30.5%;
 `;
 
 export const Title = styled.Text`

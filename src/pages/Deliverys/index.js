@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { useIsFocused } from '@react-navigation/native';
 import { ActivityIndicator, Alert } from 'react-native';
 import { useSelector } from 'react-redux';
 import { format, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
+
+import DeliveryList from './DeliveryList';
+import api from '~/services/api';
 
 import {
   Container,
@@ -17,10 +22,8 @@ import {
   Message,
 } from './styles';
 
-import DeliveryList from './DeliveryList';
-import api from '~/services/api';
-
 export default function Deliverys({ navigation }) {
+  const isFocused = useIsFocused();
   const timeSP = 'America/Sao_Paulo';
 
   const [deliverys, setDeliverys] = useState([]);
@@ -32,8 +35,8 @@ export default function Deliverys({ navigation }) {
   const deliveryMan = useSelector((state) => state.auth.deliveryMan);
   const { id } = deliveryMan;
 
-  useEffect(() => {
-    async function loadDeliverys() {
+  const loadDeliverys = useCallback(() => {
+    async function load() {
       try {
         setLoading(true);
         const response = await api.get(`/deliveryman/${id}/delivery`, {
@@ -74,7 +77,7 @@ export default function Deliverys({ navigation }) {
 
             const dateStart = delivery.start_date
               ? format(
-                  parseISO(delivery.created_at, timeSP),
+                  parseISO(delivery.start_date, timeSP),
                   "dd'/'MM'/'yyyy",
                   {
                     locale: pt,
@@ -83,13 +86,9 @@ export default function Deliverys({ navigation }) {
               : '- - / - - / - -';
 
             const dateEnd = delivery.end_date
-              ? format(
-                  parseISO(delivery.created_at, timeSP),
-                  "dd'/'MM'/'yyyy",
-                  {
-                    locale: pt,
-                  }
-                )
+              ? format(parseISO(delivery.end_date, timeSP), "dd'/'MM'/'yyyy", {
+                  locale: pt,
+                })
               : '- - / - - / - -';
 
             delivery = {
@@ -111,8 +110,12 @@ export default function Deliverys({ navigation }) {
         Alert.alert('Erro Entregas', 'Falha para consultar as entregas');
       }
     }
-    loadDeliverys();
+    load();
   }, [id, delivered, page]);
+
+  useEffect(() => {
+    loadDeliverys();
+  }, [loadDeliverys, isFocused]);
 
   function loadMoreDelivery() {
     if (moreDelivery) {
@@ -164,3 +167,8 @@ export default function Deliverys({ navigation }) {
     </Container>
   );
 }
+
+Deliverys.propTypes = {
+  navigation: PropTypes.oneOfType([PropTypes.object, PropTypes.func])
+    .isRequired,
+};

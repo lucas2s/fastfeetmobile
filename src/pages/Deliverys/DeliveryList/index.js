@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import IconEntypo from 'react-native-vector-icons/Entypo';
+
+import DeliveryProgess from '~/components/DeliveryProgress';
 
 import {
   Container,
-  ContentStatus,
+  ContentProgress,
   ContentTitle,
   ContentInfoCollun,
   Title,
@@ -14,54 +15,21 @@ import {
   TextInfo,
   ButtonDetails,
   TextButton,
-  ContentDeliveryStatus,
-  ContentDeliveryCollun,
-  LineDeliveryOne,
-  LineDeliveryTwo,
 } from './styles';
 
 export default function DeliveryList({ data, details }) {
   return (
     <Container>
-      <ContentStatus>
+      <ContentProgress>
         <ContentTitle>
           <Icon name="local-shipping" size={20} color="#7d40e7" />
           <Title>{`Enconmenda ID  ${data.id}`}</Title>
         </ContentTitle>
-        <ContentDeliveryStatus>
-          <ContentDeliveryCollun>
-            <Icon name="lens" size={10} color="#7d40e7" />
-          </ContentDeliveryCollun>
-          <LineDeliveryOne />
-          <ContentDeliveryCollun>
-            {data.start_date ? (
-              <Icon name="lens" size={10} color="#7d40e7" />
-            ) : (
-              <IconEntypo name="circle" size={10} color="#7d40e7" />
-            )}
-          </ContentDeliveryCollun>
-          <LineDeliveryTwo />
-          <ContentDeliveryCollun>
-            {data.end_date ? (
-              <Icon name="lens" size={10} color="#7d40e7" />
-            ) : (
-              <IconEntypo name="circle" size={10} color="#7d40e7" />
-            )}
-          </ContentDeliveryCollun>
-        </ContentDeliveryStatus>
-        <ContentDeliveryStatus>
-          <ContentDeliveryCollun>
-            <TextInfo>Aguardando</TextInfo>
-            <TextInfo>Retirada</TextInfo>
-          </ContentDeliveryCollun>
-          <ContentDeliveryCollun>
-            <TextInfo>Retirada</TextInfo>
-          </ContentDeliveryCollun>
-          <ContentDeliveryCollun>
-            <TextInfo>Entregue</TextInfo>
-          </ContentDeliveryCollun>
-        </ContentDeliveryStatus>
-      </ContentStatus>
+        <DeliveryProgess
+          withdrawn={data.start_date !== null}
+          delivered={data.end_date !== null}
+        />
+      </ContentProgress>
       <ContentInfo>
         <ContentInfoCollun>
           <TextInfo>Data</TextInfo>
@@ -82,5 +50,14 @@ export default function DeliveryList({ data, details }) {
 }
 
 DeliveryList.propTypes = {
-  data: PropTypes.object.isRequired,
+  data: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    start_date: PropTypes.string,
+    end_date: PropTypes.string,
+    dateCreate: PropTypes.string,
+    recipient: PropTypes.shape({
+      city: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
+  details: PropTypes.oneOfType([PropTypes.object, PropTypes.func]).isRequired,
 };
