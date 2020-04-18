@@ -1,8 +1,7 @@
 import styled from 'styled-components/native';
-import { RectButton } from 'react-native-gesture-handler';
 
 export const Container = styled.View`
-  width: 360px;
+  width: 100%;
   flex: 1;
   background: #fff;
   padding-bottom: 50px;
@@ -63,7 +62,6 @@ export const StatusDeliveryDates = styled.View`
 export const StatusDates = styled.View``;
 
 export const StatusDeliveryButtons = styled.View`
-  width: 320px;
   margin: 0px 20px;
   background: #fff;
   flex-direction: row;
@@ -71,20 +69,7 @@ export const StatusDeliveryButtons = styled.View`
 `;
 
 export const ContainerButtons = styled.View`
+  width: 33%;
   border-radius: 4px;
   border: 1px solid #eeeeee;
-`;
-
-export const Button = styled(RectButton)`
-  align-items: center;
-  justify-content: center;
-  width: 103px;
-  height: 103px;
-  border-radius: 4px;
-  background: #f8f9fd;
-`;
-
-export const TextButton = styled.Text`
-  font-size: 12px;
-  color: #999999;
 `;
