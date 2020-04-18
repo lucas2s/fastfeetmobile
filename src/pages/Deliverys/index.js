@@ -51,6 +51,7 @@ export default function Deliverys({ navigation }) {
         }
 
         setDeliverys(
+          ...deliverys,
           response.data.deliverys.map((delivery) => {
             const { recipient } = delivery;
 
@@ -115,14 +116,19 @@ export default function Deliverys({ navigation }) {
 
   useEffect(() => {
     loadDeliverys();
-  }, [loadDeliverys, isFocused]);
+  }, [loadDeliverys, isFocused, page]);
 
-  function loadMoreDelivery() {
+  function handleMoreDelivery() {
     if (moreDelivery) {
       if (!loading) {
         setPage(page + 1);
       }
     }
+  }
+
+  function handleRefresh() {
+    setDeliverys([]);
+    setPage(1);
   }
 
   return (
@@ -155,10 +161,10 @@ export default function Deliverys({ navigation }) {
                 }
               />
             )}
-            onRefresh={() => setPage(1)}
+            onRefresh={handleRefresh}
             refreshing={loading}
             onEndReachedThreshold={0.2}
-            onEndReached={loadMoreDelivery}
+            onEndReached={handleMoreDelivery}
           />
         ) : (
           <Message>Não foi encontrada nenhuma encomenda!</Message>
