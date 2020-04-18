@@ -1,4 +1,6 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -28,9 +30,9 @@ export default function Routes({ signedIn }) {
         component={Deliverys}
         options={{
           tabBarLabel: 'Entregas',
-          tabBarIcon: ({ color }) => (
-            <Icon name="assignment" color={color} size={25} />
-          ),
+          tabBarIcon: ({ color }) => {
+            return <Icon name="assignment" color={color} size={25} />;
+          },
         }}
       />
       <BottomTab.Screen
@@ -50,3 +52,7 @@ export default function Routes({ signedIn }) {
     </Stack.Navigator>
   );
 }
+
+Routes.propTypes = {
+  signedIn: PropTypes.bool.isRequired,
+};

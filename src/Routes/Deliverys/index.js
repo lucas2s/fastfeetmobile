@@ -4,7 +4,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Deliverys from '~/pages/Deliverys';
 import DeliveryDetails from '~/pages/DeliveryDetails';
-import DeliveryListProblems from '~/pages/DeliveryListProblems';
+import DeliveryProblems from '~/pages/DeliveryProblems';
+import DeliveryViewProblems from '~/pages/DeliveryViewProblems';
 import DeliveryConfirm from '~/pages/DeliveryConfirm';
 import Header from '~/components/Header';
 
@@ -48,13 +49,26 @@ export default function DeliverysRoutes() {
         }}
       />
       <Stack.Screen
-        name="DeliveryListProblems"
-        component={DeliveryListProblems}
+        name="DeliveryProblems"
+        component={DeliveryProblems}
+        options={{
+          headerTitle: 'Informar problema',
+        }}
+      />
+      <Stack.Screen
+        name="DeliveryViewProblems"
+        component={DeliveryViewProblems}
         options={{
           headerTitle: 'Vizualizar problemas',
         }}
       />
-      <Stack.Screen name="DeliveryConfirm" component={DeliveryConfirm} />
+      <Stack.Screen
+        name="DeliveryConfirm"
+        component={DeliveryConfirm}
+        options={{
+          headerTitle: 'Confirmar entrega',
+        }}
+      />
     </Stack.Navigator>
   );
 }
