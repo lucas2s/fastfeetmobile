@@ -126,6 +126,7 @@ export default function DeliveryDetails({ navigation, route }) {
                   color="#2D7F19"
                 />
               }
+              disabled={false}
               title="Confirmar Retirada"
               onPress={handleConfirmWithdrawal}
             />
