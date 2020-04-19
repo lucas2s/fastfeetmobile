@@ -27,10 +27,10 @@ export default function Deliverys({ navigation }) {
   const timeSP = 'America/Sao_Paulo';
 
   const [deliverys, setDeliverys] = useState([]);
-  const [loading = false, setLoading] = useState();
-  const [delivered = false, setDelivered] = useState();
-  const [page, setPage] = useState();
-  const [moreDelivery = true, setMoreDelivery] = useState();
+  const [loading, setLoading] = useState(false);
+  const [delivered, setDelivered] = useState(false);
+  const [page, setPage] = useState(1);
+  const [moreDelivery, setMoreDelivery] = useState(true);
 
   const deliveryMan = useSelector((state) => state.auth.deliveryMan);
   const { id } = deliveryMan;
@@ -38,7 +38,10 @@ export default function Deliverys({ navigation }) {
   const loadDeliverys = useCallback(() => {
     async function load() {
       try {
-        setLoading(true);
+        if (page === 1) {
+          setLoading(true);
+        }
+
         const response = await api.get(`/deliveryman/${id}/delivery`, {
           params: {
             page,
@@ -50,60 +53,54 @@ export default function Deliverys({ navigation }) {
           setMoreDelivery(false);
         }
 
-        setDeliverys(
-          ...deliverys,
-          response.data.deliverys.map((delivery) => {
-            const { recipient } = delivery;
+        const newDeliverys = response.data.deliverys.map((delivery) => {
+          const { recipient } = delivery;
 
-            const address = `${recipient.street}, ${recipient.number}${
-              recipient.complement !== '' ? ` - ${recipient.complement}` : ''
-            }, ${recipient.city}, ${recipient.state}`;
+          const address = `${recipient.street}, ${recipient.number}${
+            recipient.complement !== '' ? ` - ${recipient.complement}` : ''
+          }, ${recipient.city}, ${recipient.state}`;
 
-            let status = '';
-            if (delivery.end_date !== null) {
-              status = 'Entregue';
-            } else if (delivery.start_date !== null) {
-              status = 'Retirada';
-            } else {
-              status = 'Pendente';
+          let status = '';
+          if (delivery.end_date !== null) {
+            status = 'Entregue';
+          } else if (delivery.start_date !== null) {
+            status = 'Retirada';
+          } else {
+            status = 'Pendente';
+          }
+
+          const dateCreate = format(
+            parseISO(delivery.created_at, timeSP),
+            "dd'/'MM'/'yyyy",
+            {
+              locale: pt,
             }
+          );
 
-            const dateCreate = format(
-              parseISO(delivery.created_at, timeSP),
-              "dd'/'MM'/'yyyy",
-              {
+          const dateStart = delivery.start_date
+            ? format(parseISO(delivery.start_date, timeSP), "dd'/'MM'/'yyyy", {
                 locale: pt,
-              }
-            );
+              })
+            : '- - / - - / - -';
 
-            const dateStart = delivery.start_date
-              ? format(
-                  parseISO(delivery.start_date, timeSP),
-                  "dd'/'MM'/'yyyy",
-                  {
-                    locale: pt,
-                  }
-                )
-              : '- - / - - / - -';
+          const dateEnd = delivery.end_date
+            ? format(parseISO(delivery.end_date, timeSP), "dd'/'MM'/'yyyy", {
+                locale: pt,
+              })
+            : '- - / - - / - -';
 
-            const dateEnd = delivery.end_date
-              ? format(parseISO(delivery.end_date, timeSP), "dd'/'MM'/'yyyy", {
-                  locale: pt,
-                })
-              : '- - / - - / - -';
+          delivery = {
+            ...delivery,
+            address,
+            status,
+            dateCreate,
+            dateStart,
+            dateEnd,
+          };
+          return delivery;
+        });
 
-            delivery = {
-              ...delivery,
-              address,
-              status,
-              dateCreate,
-              dateStart,
-              dateEnd,
-            };
-            return delivery;
-          })
-        );
-
+        setDeliverys(deliverys.concat(newDeliverys));
         setLoading(false);
       } catch (error) {
         setDeliverys([]);
@@ -116,7 +113,17 @@ export default function Deliverys({ navigation }) {
 
   useEffect(() => {
     loadDeliverys();
-  }, [loadDeliverys, isFocused, page]);
+  }, [loadDeliverys, isFocused]);
+
+  function handleRefresh() {
+    if (page > 1) {
+      setDeliverys([]);
+      setMoreDelivery(true);
+      setPage(1);
+    } else {
+      loadDeliverys();
+    }
+  }
 
   function handleMoreDelivery() {
     if (moreDelivery) {
@@ -126,9 +133,11 @@ export default function Deliverys({ navigation }) {
     }
   }
 
-  function handleRefresh() {
+  function handleStatus(statusDelivery) {
     setDeliverys([]);
+    setMoreDelivery(true);
     setPage(1);
+    setDelivered(statusDelivery);
   }
 
   return (
@@ -136,10 +145,10 @@ export default function Deliverys({ navigation }) {
       <TopDelivery>
         <Title>Entregas</Title>
         <Options>
-          <ButtonOptions onPress={() => setDelivered(false)}>
+          <ButtonOptions onPress={() => handleStatus(false)}>
             <TextButton active={!delivered}>Pendentes</TextButton>
           </ButtonOptions>
-          <ButtonOptions onPress={() => setDelivered(true)}>
+          <ButtonOptions onPress={() => handleStatus(true)}>
             <TextButton active={delivered}>Entregues</TextButton>
           </ButtonOptions>
         </Options>
@@ -163,7 +172,7 @@ export default function Deliverys({ navigation }) {
             )}
             onRefresh={handleRefresh}
             refreshing={loading}
-            onEndReachedThreshold={0.2}
+            onEndReachedThreshold={0.4}
             onEndReached={handleMoreDelivery}
           />
         ) : (

@@ -28,8 +28,7 @@ export default function DeliveryViewProblems({ route }) {
 
   const [problems, setProblems] = useState([]);
   const [loading = false, setLoading] = useState();
-  const [page, setPage] = useState();
-  const [moreProblems = true, setMoreProblems] = useState();
+  const [page] = useState(1);
 
   const loadProblems = useCallback(() => {
     async function load() {
@@ -41,10 +40,6 @@ export default function DeliveryViewProblems({ route }) {
             page,
           },
         });
-
-        if (response.data.problems.length < 10) {
-          setMoreProblems(false);
-        }
 
         setProblems(
           response.data.problems.map((problem) => {
@@ -78,14 +73,6 @@ export default function DeliveryViewProblems({ route }) {
     loadProblems();
   }, [loadProblems]);
 
-  function loadMoreProblems() {
-    if (moreProblems) {
-      if (!loading) {
-        setPage(page + 1);
-      }
-    }
-  }
-
   return (
     <Container>
       <Background />
@@ -103,10 +90,6 @@ export default function DeliveryViewProblems({ route }) {
             data={problems}
             keyExtractor={(item) => String(item.id)}
             renderItem={({ item: problem }) => <ProblemList data={problem} />}
-            onRefresh={() => setPage(1)}
-            refreshing={loading}
-            onEndReachedThreshold={0.2}
-            onEndReached={loadMoreProblems}
           />
         ) : (
           <ContentMessage>
